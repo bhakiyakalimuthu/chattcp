@@ -1,5 +1,5 @@
-module chattcp
+module github.com/bhakiyakalimuthu/chattcp
 
-go 1.14
+go 1.13
 
 require go.uber.org/zap v1.14.1

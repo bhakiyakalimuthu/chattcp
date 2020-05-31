@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"go.uber.org/zap"
 	"net"
+	"time"
 )
 
 
@@ -21,9 +22,12 @@ type TcpServer struct {
 	clients []*Client
 }
 
-
-func NewTcpServer()  *TcpServer{
-	return &TcpServer{}
+func NewTcpServer(logger *zap.Logger, listener net.Listener, clients []*Client)  *TcpServer{
+	return &TcpServer{
+		logger:   logger,
+		listener: listener,
+		clients:  clients,
+	}
 }
 
 func (t *TcpServer) Listen(address string) error{
@@ -38,9 +42,15 @@ func (t *TcpServer) Start() {
 	for{
 		conn,err := t.listener.Accept()
 		if err!=nil {
-
+			t.logger.Error("failed to accept connection")
 		}
 		str,err:= bufio.NewReader(conn).ReadString('\n')
+		if err!=nil {
+			t.logger.Error("failed to read from connection")
+		}
+		t.logger.Info(str)
+		t:= time.Now().Format(time.RFC3339)
+		conn.Write([]byte(t))
 	}
 
 
